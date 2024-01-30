@@ -1,0 +1,25 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+body{
+  background-color: darkslategray;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  overflow-x: hidden;
+
+}
+#root{
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  display: grid;
+  grid-template-areas: "head head head"
+                        "main main aside";
+
+}
+header{
+  position: fixed;
+}
