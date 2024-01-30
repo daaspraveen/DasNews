@@ -2,7 +2,6 @@ import { useState,useEffect,useRef, useCallback } from 'react'
 import './App.css'
 import NewsBox from './News';
 import Header from './header';
-import allCountries from './countries';
 
 console.log("_______________________")
 
@@ -13,9 +12,9 @@ export default function App() {
   useEffect(() => {
     const countrycode = "us";
     const country = `country=${countrycode}`;
-    
-    //const apilink1 = "https://saurav.tech/NewsAPI/top-headlines/category/health/in.json";
-    const apilinkTopheadlinesCountry = `//https://newsapi.org/v2/top-headlines?${country}&apiKey=a086511760904f5896d6a016d19b2d28`;
+
+    //const apilink1 = "https://saurav.tech/NewsAPI/top-headlines/category/general/in.json";
+    const apilinkTopheadlinesCountry = `https://saurav.tech/NewsAPI/top-headlines/category/general/in.json`;//https://newsapi.org/v2/top-headlines?${country}&apiKey=a086511760904f5896d6a016d19b2d28`;
 
     // fetching function
     const fetchapidata = async (ApiLink) => {
@@ -39,9 +38,47 @@ export default function App() {
   
   const ChangeNewsContent = useCallback(async (trimmedSearchValue, changed_date, currentDate) => {
     const addingSearchtoApi = trimmedSearchValue;
-    let response2;
+    let response2;  
+    try {
+        if (currentDate === changed_date) {
+            const apilinkSearch = `https://newsapi.org/v2/everything?q=${addingSearchtoApi}&apiKey=a086511760904f5896d6a016d19b2d28`;
+            response2 = await fetch(apilinkSearch).then(response => response.json());
+        } else {
+            const apilinkEverythingDate = `https://newsapi.org/v2/everything?q=${addingSearchtoApi}&from=${changed_date}&to=${currentDate}&sortBy=popularity&apiKey=a086511760904f5896d6a016d19b2d28`;
+            response2 = await fetch(apilinkEverythingDate).then(response => response.json());
+        }
+
+        if (response2.status === "ok") {
+            if (response2.articles.length > 0) {
+                setAllNewsArticles(response2.articles);
+                setNoNewsContent("Your Searched News");
+            } else {
+                setNoNewsContent("No News on Searched");
+                console.log("No news found");
+            }
+        } else {
+            setNoNewsContent("No News Available");
+            console.error("News API error:", response2.message);
+        }
+    } catch (error) {
+        setNoNewsContent("Error Fetching News");
+        console.error("Error fetching news:", error);
+    }
   });
-  
+
+
+  // ASIDE NEWS DATA FETCHED AND ADDED..
+  /*
+  let [asidenewsdata,SetAsideNewsData] = useState([]);
+
+  const aside_fetch = fetch("https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28")
+                        .then(response => response.json())
+                        .then(data => {
+                            SetAsideNewsData(data.articles)
+                            console.log("Asidenewsdata added:::", asidenewsdata);
+                          })
+                        .catch(error => console.error("Error fetching aside data:", error))
+                        .finally(() => console.log("no work done"));*/
   const [asidesportsnewsdata, setAsideSportsNewsData] = useState([]);
   const [asidebusinessnewsdata, setAsideBusinessNewsData] = useState([]);
   const [asidehealthnewsdata, setAsideHealthNewsData] = useState([]);
@@ -129,7 +166,7 @@ export default function App() {
       </main>
 
       <aside className='aside'>  
-            <h1 className='aside-section-heading'>Catlogs</h1>
+            <h1 className='aside-section-heading'>Categories</h1>
             <section className='aside-sections flex'>
               <section className='sports-aside aside-newsBox flex'>
                 <p>sports</p>

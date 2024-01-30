@@ -23,3 +23,11 @@ body{
 header{
   position: fixed;
 }
+
+@media screen and (min-width:0px) and (max-width:767px) {
+  #root{
+    grid-template-areas: "head"
+                          "main"
+                          "aside";
+  }
+}

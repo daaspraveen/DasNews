@@ -51,9 +51,8 @@ export default function Header({ ChangeNewsContent }) {
             <div className="header-left flex">
                 <img
                     className="head-logo"
-                    src="src/news-favicon11.png"
+                    src="src/assets/news-favicon.png"
                     alt=""
-                    width="50px"
                 />
                 <h1 className="head-name">DasNews</h1>
             </div>
@@ -74,7 +73,7 @@ export default function Header({ ChangeNewsContent }) {
                         onClick={SearchNews}
                         onKeyPress={handleKeyPress}
                     >
-                        <img src="src/search.png" alt="" className="search-icon" />
+                        <img src="src/assets/search.png" alt="" className="search-icon" />
                     </button>
                 </div>
                 <div className="head-date-box">
