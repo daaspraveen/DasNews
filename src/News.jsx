@@ -4,7 +4,7 @@ export default function NewsBox(props){
     return (
         <>
             <div className="newsbox-image">
-                <img src={props.newsimage?props.newsimage:"src/noimage.png"} alt="Image Unavailable" className='newsimg'/>
+                <img src={props.newsimage?props.newsimage:"noimage.png"} alt="Image Unavailable" className='newsimg'/>
             </div>
             <div className="newsbox-content">
                 <h3>{props.newstitle}</h3>

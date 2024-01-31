@@ -110,16 +110,16 @@
   border-left: 2px ridge black;
 }
 .aside-sections{
-  width: calc(90% - 5px);
-  padding: 5px;
-  margin: auto;
+  width: calc(98% - 5px);
   flex-direction: column;
   flex-wrap: wrap;
+  position: relative;
 }
 .aside-section-heading{
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   text-align: center;
   width: 27vw;
+  color: #ddd;
   font-variant-caps: all-petite-caps;
   border-bottom: 3px solid black;
   background-color: #4a4a4a;
@@ -155,7 +155,7 @@
   }
 }
 .sports-aside{
-  margin-top: 50px;
+  margin-top: 80px;
 }
 
 @media screen and (max-width:453px) {
@@ -190,7 +190,7 @@
       width: 100%;
       max-width: 100%;
       height: 100%;
-      object-fit: cover; /* or any other value for object-fit */
+      object-fit: cover;
   }
   .aside{
     width: 100%;

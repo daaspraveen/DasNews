@@ -14,57 +14,73 @@ export default function App() {
     const country = `country=${countrycode}`;
 
     //const apilink1 = "https://saurav.tech/NewsAPI/top-headlines/category/general/in.json";
-    const apilinkTopheadlinesCountry = `https://saurav.tech/NewsAPI/top-headlines/category/general/in.json`;//https://newsapi.org/v2/top-headlines?${country}&apiKey=a086511760904f5896d6a016d19b2d28`;
-
     // fetching function
-    const fetchapidata = async (ApiLink) => {
+    const fetchapidata = async () => {
       try {
         // Fetching data from apilink1
-        const response1 = await fetch(ApiLink);
-        const Newsdata = await response1.json();
-
-        setAllNewsArticles(Newsdata.articles);
+        const response1 = await fetch(`https://newsapi.org/v2/top-headlines?${country}&apiKey=a086511760904f5896d6a016d19b2d28`);
+        if (!response1.ok || response1.status==429){
+          const response1 = await fetch(`https://saurav.tech/NewsAPI/top-headlines/category/general/in.json`);
+          const Newsdata = await response1.json();
+          setAllNewsArticles(Newsdata.articles.slice(0,20));
+        }
+        else{
+          const Newsdata = await response1.json();
+          setAllNewsArticles(Newsdata.articles.slice(0,20));
+        }
       } 
       catch (error) {
         console.log("Error in API fetching:", error);
       }
     }
     // calling fetching required fetch api.......
-    fetchapidata(apilinkTopheadlinesCountry);
+    fetchapidata();
   }, []);
   
   //========================================================= //
   // function changes news on search input
-  
   const ChangeNewsContent = useCallback(async (trimmedSearchValue, changed_date, currentDate) => {
-    const addingSearchtoApi = trimmedSearchValue;
-    let response2;  
+    const addingSearchtoApi = encodeURIComponent(trimmedSearchValue); // Encode search query for URL
+
     try {
+        let response2;
+
         if (currentDate === changed_date) {
             const apilinkSearch = `https://newsapi.org/v2/everything?q=${addingSearchtoApi}&apiKey=a086511760904f5896d6a016d19b2d28`;
-            response2 = await fetch(apilinkSearch).then(response => response.json());
+            response2 = await fetch(apilinkSearch);
         } else {
             const apilinkEverythingDate = `https://newsapi.org/v2/everything?q=${addingSearchtoApi}&from=${changed_date}&to=${currentDate}&sortBy=popularity&apiKey=a086511760904f5896d6a016d19b2d28`;
-            response2 = await fetch(apilinkEverythingDate).then(response => response.json());
+            response2 = await fetch(apilinkEverythingDate);
         }
 
-        if (response2.status === "ok") {
-            if (response2.articles.length > 0) {
-                setAllNewsArticles(response2.articles);
-                setNoNewsContent("Your Searched News");
-            } else {
-                setNoNewsContent("No News on Searched");
-                console.log("No news found");
-            }
+        if (!response2.ok) {
+            throw new Error('Failed to fetch news from primary API');
+        }
+
+        const data = await response2.json();
+
+        if (data.status === "ok" && data.articles.length > 0) {
+            setAllNewsArticles(data.articles);
+            setNoNewsContent("Your Searched News");
         } else {
-            setNoNewsContent("No News Available");
-            console.error("News API error:", response2.message);
+            // Fallback to another API if primary API returns no articles
+            const alternativeResponse = await fetch(`https://saurav.tech/NewsAPI/top-headlines/category/${trimmedSearchValue}/in.json`);
+            const alternativeData = await alternativeResponse.json();
+
+            if (alternativeData.status === "ok" && alternativeData.articles.length > 0) {
+                setAllNewsArticles(alternativeData.articles);
+                setNoNewsContent("Your Searched News (from alternative source)");
+            } else {
+                setNoNewsContent("No News Available");
+                console.log("No news found from both APIs");
+            }
         }
     } catch (error) {
         setNoNewsContent("Error Fetching News");
         console.error("Error fetching news:", error);
     }
-  });
+}, []);
+
 
 
   // ASIDE NEWS DATA FETCHED AND ADDED..
@@ -86,57 +102,45 @@ export default function App() {
   const [asidetechnologynewsdata, setAsideTechnologyNewsData] = useState([]);
 
   useEffect(() => {
-    const asideSportsFetch = async () => {
+    const currentDateObj = new Date();
+    const currentMonth = ('0' + (currentDateObj.getMonth() + 1)).slice(-2);
+    const currentDay = ('0' + currentDateObj.getDate()).slice(-2);
+    const currentYear = currentDateObj.getFullYear();
+    const currentDate = `${currentYear}-${currentMonth}-${currentDay}`;
+    let previousDate ;
+    if (currentDay === '01' && currentMonth === '01') {
+        const previousYear = currentYear - 1;
+        previousDate = `${previousYear}-12-31`;
+    } else {
+        const previousDay = ('0' + (currentDay - 1)).slice(-2);
+        previousDate = `${currentYear}-${currentMonth}-${previousDay}`;
+    }
+
+    const fetchNewsData = async (category, setData) => {
       try {
-        const response = await fetch("https://saurav.tech/NewsAPI/top-headlines/category/sports/in.json");//https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28");
-        const data = await response.json();
-        setAsideSportsNewsData(data.articles);
+          const response = await fetch(`https://newsapi.org/v2/everything?q=${category}&from=${previousDate}&to=${currentDate}&sortBy=popularity&apiKey=a086511760904f5896d6a016d19b2d28`);
+          if (!response.ok || response.status === 429) {
+              // Fetch data from alternative source if the initial request fails
+              const alternativeResponse = await fetch(`https://saurav.tech/NewsAPI/top-headlines/category/${category}/in.json`);
+              const alternativeData = await alternativeResponse.json();
+              setData(alternativeData.articles);
+          } else {
+              const data = await response.json();
+              setData(data.articles);
+          }
       } catch (error) {
-        console.error("Error fetching aside data:", error);
+          console.error(`Error fetching ${category} data:`, error);
       }
     };
-    asideSportsFetch();
-    const asideBusinessFetch = async () => {
-      try {
-        const response = await fetch("https://saurav.tech/NewsAPI/top-headlines/category/business/in.json");//https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28");
-        const data = await response.json();
-        setAsideBusinessNewsData(data.articles);
-      } catch (error) {
-        console.error("Error fetching aside data:", error);
-      }
-    };
-    asideBusinessFetch();
-    const asideHealthFetch = async () => {
-      try {
-        const response = await fetch("https://saurav.tech/NewsAPI/top-headlines/category/health/in.json");//https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28");
-        const data = await response.json();
-        setAsideHealthNewsData(data.articles);
-      } catch (error) {
-        console.error("Error fetching aside data:", error);
-      }
-    }
-    asideHealthFetch();
-    const asideScienceFetch = async () => {
-      try {
-        const response = await fetch("https://saurav.tech/NewsAPI/top-headlines/category/science/in.json");//https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28");
-        const data = await response.json();
-        setAsideScienceNewsData(data.articles);
-      } catch (error) {
-        console.error("Error fetching aside data:", error);
-      }
-    }
-    asideScienceFetch();
-    const asideTechnologyFetch = async () => {
-      try {
-        const response = await fetch("https://saurav.tech/NewsAPI/top-headlines/category/technology/in.json");//https://newsapi.org/v2/top-headlines?country=in&category=sports&apiKey=a086511760904f5896d6a016d19b2d28");
-        const data = await response.json();
-        setAsideTechnologyNewsData(data.articles);
-      } catch (error) {
-        console.error("Error fetching aside data:", error);
-      }
-    }
-    asideTechnologyFetch();
-  })
+  
+
+    fetchNewsData('sports', setAsideSportsNewsData);
+    fetchNewsData('business', setAsideBusinessNewsData);
+    fetchNewsData('health', setAsideHealthNewsData);
+    fetchNewsData('science', setAsideScienceNewsData);
+    fetchNewsData('technology', setAsideTechnologyNewsData);
+}, []);
+
 
   return (
     <>
@@ -243,7 +247,7 @@ export default function App() {
               <section className='technology-aside aside-newsBox flex'>
                 <p>technology</p>
                 {asidetechnologynewsdata.length > 0 && 
-                  asidetechnologynewsdata.slice(0,4).map((newsdata,index) => {
+                  asidetechnologynewsdata.slice(0,3).map((newsdata,index) => {
                   return (
                     <div className='newsbox flex' key={index}>
                       <NewsBox
