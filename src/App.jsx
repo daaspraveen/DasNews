@@ -184,7 +184,7 @@ export default function App() {
                               newsdescription={newsdata.description}
                               newslink={newsdata.url}
                               newsauthor={newsdata.author}
-                              newspublisheddate={newsdata.publishedAt}
+                              newspublisheddate={newsdata.publishedAt.slice(0,10)}
                           />
                     </div>
                   );
@@ -202,7 +202,7 @@ export default function App() {
                               newsdescription={newsdata.description}
                               newslink={newsdata.url}
                               newsauthor={newsdata.author}
-                              newspublisheddate={newsdata.publishedAt}
+                              newspublisheddate={newsdata.publishedAt.slice(0,10)}
                           />
                     </div>
                   );
@@ -220,7 +220,7 @@ export default function App() {
                               newsdescription={newsdata.description}
                               newslink={newsdata.url}
                               newsauthor={newsdata.author}
-                              newspublisheddate={newsdata.publishedAt}
+                              newspublisheddate={newsdata.publishedAt.slice(0,10)}
                           />
                     </div>
                   );
@@ -238,7 +238,7 @@ export default function App() {
                               newsdescription={newsdata.description}
                               newslink={newsdata.url}
                               newsauthor={newsdata.author}
-                              newspublisheddate={newsdata.publishedAt}
+                              newspublisheddate={newsdata.publishedAt.slice(0,10)}
                           />
                     </div>
                   );
@@ -256,7 +256,7 @@ export default function App() {
                               newsdescription={newsdata.description}
                               newslink={newsdata.url}
                               newsauthor={newsdata.author}
-                              newspublisheddate={newsdata.publishedAt}
+                              newspublisheddate={newsdata.publishedAt.slice(0,10)}
                           />
                     </div>
                   );

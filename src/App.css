@@ -77,7 +77,7 @@
     text-overflow: ellipsis;
     overflow-y: hidden;
     font-size: 0.9rem;
-    color:rgb(31, 31, 31);
+    color:rgb(0, 0, 0);
   }
   .readmore-link{
     color: #000;
