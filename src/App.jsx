@@ -20,8 +20,8 @@ export default function App() {
         // Fetching data from apilink1
         const response1 = await fetch(`https://newsapi.org/v2/top-headlines?${country}&apiKey=a086511760904f5896d6a016d19b2d28`);
         if (!response1.ok || response1.status==429){
-          const response1 = await fetch(`https://saurav.tech/NewsAPI/top-headlines/category/general/in.json`);
-          const Newsdata = await response1.json();
+          const response2 = await fetch(`https://saurav.tech/NewsAPI/top-headlines/category/general/in.json`);
+          const Newsdata = await response2.json();
           setAllNewsArticles(Newsdata.articles.slice(0,20));
         }
         else{
